@@ -1,5 +1,7 @@
 https://swsmith.cc/posts/efa-best-practices.html
+
 https://github.com/aws-samples/awsome-distributed-training/blob/main/1.architectures/efa-cheatsheet.md
+
 https://aws.amazon.com/blogs/hpc/large-scale-training-with-nemo-megatron-on-aws-parallelcluster-using-p5-instances/
 
 
