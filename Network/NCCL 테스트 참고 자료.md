@@ -3,7 +3,7 @@ https://github.com/aws-samples/awsome-distributed-training/blob/main/1.architect
 https://aws.amazon.com/blogs/hpc/large-scale-training-with-nemo-megatron-on-aws-parallelcluster-using-p5-instances/
 
 
-
+```
 NCCL+AWS OFI NCCL+EFA installer만 잘 맞는 버전으로 설치하시면 자동으로 EFA를 탑니다.
 
 export NCCL_PROTO=simple
@@ -14,3 +14,4 @@ export GLOO_SOCKET_IFNAME=ens5 이런건 다 빼도 되고 최신 버전에선 �
 NCCL, AWS-OFI-NCCL, EFA INSTALLER
 9:43
 참고로 최근까지 NCCL v2.28.3-1, AWS-OFI-NCCL v1.17.1, EFA-INSTALLER v1.44.0 이 세가지 조합으로 테스트했을 때 EFA 잘 타는 거 확인했습니다
+```
