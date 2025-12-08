@@ -1,0 +1,183 @@
+
+### CUDA 초기화 실패의 가장 흔한 원인들:
+```
+1. GPU 드라이버 문제 (가장 흔함) ⭐⭐⭐⭐⭐
+2. CUDA 버전 불일치 ⭐⭐⭐⭐
+3. GPU 하드웨어 인식 실패 ⭐⭐⭐
+4. 메모리 부족 ⭐⭐
+5. 권한 문제 ⭐⭐
+
+```
+
+
+### GPU 드라이버 문제 (가장 흔함)
+```
+import torch
+torch.cuda.is_available()
+
+에러:
+CUDA initialization: CUDA driver version is insufficient for CUDA runtime version
+(35)
+또는
+CUDA initialization: Unexpected error from cudaGetDeviceCount(). Did you run
+some cuda functions before calling NumCudaDevices() that might have already set
+an error? Error 999: unknown error
+
+원인
+
+┌─────────────────────────────────────────────────────────────┐
+│         드라이버 vs CUDA 버전 불일치                        │
+└─────────────────────────────────────────────────────────────┘
+
+케이스 1: 드라이버 너무 오래됨
+════════════════════════════════════════════════════════════
+설치된 것:
+├── NVIDIA 드라이버: 470.x (오래됨)
+└── CUDA Toolkit: 12.2 (최신)
+
+문제:
+└── 드라이버 470.x는 CUDA 11.4까지만 지원
+    └── CUDA 12.2 초기화 실패! ❌
+
+해결:
+└── 드라이버 업그레이드 (525.x 이상 필요)
+
+케이스 2: 드라이버 미설치
+════════════════════════════════════════════════════════════
+$ nvidia-smi
+
+출력:
+NVIDIA-SMI has failed because it couldn't communicate with the
+NVIDIA driver. Make sure that the latest NVIDIA driver is installed
+and running.
+
+원인:
+└── NVIDIA 드라이버 자체가 설치 안 됨 ❌
+
+해결:
+└── 드라이버 설치 필요
+
+케이스 3: 드라이버 로드 실패
+════════════════════════════════════════════════════════════
+$ lsmod | grep nvidia
+(빈 출력)
+
+원인:
+└── 커널 모듈이 로드되지 않음 ❌
+
+해결:
+$ sudo modprobe nvidia
+
+```
+
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│              GPU 환경                                        │
+└─────────────────────────────────────────────────────────────┘
+
+NVIDIA 드라이버 = GPU 하드웨어를 제어하는 기본 소프트웨어
+CUDA Toolkit = GPU 프로그래밍을 위한 개발 도구
+PyTorch/TensorFlow = CUDA를 사용하는 앱
+
+계층 구조:
+┌──────────────────────┐
+│  PyTorch/TensorFlow  │  ← 앱
+│  "CUDA 12.1 필요"    │
+└──────────┬───────────┘
+           │ 요구
+           ↓
+┌──────────────────────┐
+│  CUDA Toolkit 12.1   │  ← 개발 도구
+└──────────┬───────────┘
+           │ 요구
+           ↓
+┌──────────────────────┐
+│  NVIDIA 드라이버     │  ← 기본 소프트웨어
+│  (버전 525 이상)     │
+└──────────┬───────────┘
+           │ 제어
+           ↓
+┌──────────────────────┐
+│  GPU 하드웨어        │
+│  (H100, A100 등)     │
+└──────────────────────┘
+
+PyTorch: "나는 CUDA 12.1이 필요해!"
+CUDA 12.1: "나는 드라이버 525 이상이 필요해!"
+드라이버 470: "나는 CUDA 11.4까지만 지원해..."
+
+결과: 초기화 실패! ❌
+
+```
+
+
+
+
+
+
+
+
+### CUDA 버전 불일치
+```
+증상
+import torch
+print(torch.version.cuda)  # 12.1
+print(torch.cuda.is_available())  # False
+
+에러 로그:
+CUDA driver version is insufficient for CUDA runtime version
+
+
+원인
+┌─────────────────────────────────────────────────────────────┐
+│         CUDA 버전 호환성 문제                               │
+└─────────────────────────────────────────────────────────────┘
+
+문제 상황:
+════════════════════════════════════════════════════════════
+시스템 CUDA: 11.8
+├── /usr/local/cuda-11.8/
+└── nvidia-smi: CUDA Version: 11.8
+
+PyTorch 빌드: CUDA 12.1
+├── torch.version.cuda: '12.1'
+└── CUDA 12.1로 컴파일된 바이너리
+
+결과:
+└── PyTorch가 CUDA 12.1 런타임 요구
+    └── 시스템에는 11.8만 있음
+        └── 초기화 실패! ❌
+
+해결 방법:
+방법 1: PyTorch 재설치 (CUDA 11.8 버전)
+pip install torch --index-url https://download.pytorch.org/whl/cu118
+
+방법 2: CUDA 업그레이드 (12.1로)
+wget https://developer.download.nvidia.com/compute/cuda/12.1.0/...
+sudo sh cuda_12.1.0_linux.run
+
+```
+
+
+
+
+```
+
+```
+
+
+
+
+
+```
+
+```
+
+
+
+
+
+```
+
+```
