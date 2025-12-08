@@ -225,5 +225,29 @@ GPU 하드웨어
 
 
 ```
+1. GPU (하드웨어)
+
+    물리적인 그래픽 처리 장치
+    수천 개의 코어로 병렬 연산 수행
+    예: RTX 4090, A100, H100
+
+2. NVIDIA 드라이버
+
+    GPU와 운영체제를 연결하는 소프트웨어
+    GPU 하드웨어를 제어하고 관리
+    CUDA 런타임 라이브러리 포함
+    정기적인 업데이트 필요
+
+3. CUDA (Compute Unified Device Architecture)
+
+    NVIDIA의 병렬 컴퓨팅 플랫폼 및 프로그래밍 모델
+    GPU를 범용 연산에 사용할 수 있게 해주는 아키텍처
+    C/C++ 확장 언어로 GPU 프로그래밍 가능
+
+4. CUDA 툴킷
+
+    CUDA 개발을 위한 소프트웨어 개발 키트 (SDK)
+    포함 내용: - 컴파일러: nvcc (CUDA 코드를 컴파일) - 라이브러리: cuBLAS, cuFFT, cuDNN 등 - 디버깅 도구: cuda-gdb, Nsight - 프로파일링 도구: nvprof, Nsight Systems - 문서 및 샘플 코드
+
 
 ```
