@@ -19,7 +19,7 @@ PyTorch는 필요 없음! ✅
 
 ```
 
-### 분산 학습의 통신 패턴:
+### 분산 학습의 통신 패턴:All-Reduce: 주로 사용 (90-95%)
 ```
 GPU 학습 (PyTorch DDP):
 ├── Forward Pass: 계산만 (통신 없음)
