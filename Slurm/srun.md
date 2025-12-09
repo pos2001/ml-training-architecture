@@ -363,4 +363,100 @@ Slurm이 전체 프로세스 라이프사이클 관리
 ```
 
 
-### 
+### 시나리오 1: 단일 노드에 모두 배치
+```
+srun -n 4 --mpi=pmix ./my_program
+
+Node1: [Process0] [Process1] [Process2] [Process3]
+
+
+    총 4개 프로세스
+    노드 지정 없음 → Slurm이 자동으로 1개 노드에 모두 배치
+    같은 노드 내에서 통신 (빠름, 공유 메모리 사용 가능)
+
+```
+
+
+
+### 시나리오 2: 여러 노드에 분산
+```
+srun -n 4 -N 2 --mpi=pmix ./my_program
+
+Node1: [Process0] [Process1]
+Node2: [Process2] [Process3]
+
+
+    총 4개 프로세스
+    -N 2: 2개 노드 사용 지정
+    자동으로 균등 분배 (각 노드에 2개씩)
+    노드 간 통신 필요 (네트워크 사용)
+
+```
+
+
+
+### ntasks-per-node 옵션
+```
+srun -n 4 --ntasks-per-node=1 --mpi=pmix ./my_program
+
+Node1: [Process0]
+Node2: [Process1]
+Node3: [Process2]
+Node4: [Process3]
+
+
+    총 4개 프로세스
+    --ntasks-per-node=1: 각 노드에 1개 프로세스만 배치
+    결과적으로 4개 노드 사용
+    노드당 1개씩 분산 배치
+
+
+srun -n 4 -N 2 --mpi=pmix ./my_program
+
+    4개 태스크를 2개 노드에 분산
+    각 노드: 2개 프로세스
+
+srun -n 8 -N 2-4 --mpi=pmix ./my_program
+
+    8개 태스크를 2~4개 노드에 분산
+    Slurm이 가용 노드에 따라 자동 결정
+
+```
+
+
+
+
+### 실제 리소스 사용 예시, 예시 1: 2개 노드, 노드당 4개 프로세스
+```
+srun -n 8 -N 2 --mpi=pmix ./my_program
+
+    총 8개 프로세스
+    2개 노드 사용
+    각 노드: 4개 프로세스 (8 cores per processor)
+    각 노드의 나머지 4개 코어는 유휴 상태
+
+Node1: [P0] [P1] [P2] [P3]  (4 cores idle)
+Node2: [P4] [P5] [P6] [P7]  (4 cores idle)
+
+```
+
+
+
+### GPU 학습 (각 GPU마다 1개 프로세스)
+```
+# 4개 노드, 각 8개 GPU
+srun --nodes=4 \
+--ntasks-per-node=8 \
+--gpus-per-task=1 \
+--mpi=pmix \
+./gpu_training
+
+결과:
+Node1: 8개 프로세스 (각각 GPU 0-7 사용)
+Node2: 8개 프로세스 (각각 GPU 0-7 사용)
+Node3: 8개 프로세스 (각각 GPU 0-7 사용)
+Node4: 8개 프로세스 (각각 GPU 0-7 사용)
+총: 32개 프로세스
+
+```
+
