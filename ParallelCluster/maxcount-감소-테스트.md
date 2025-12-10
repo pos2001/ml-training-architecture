@@ -19,3 +19,26 @@
 
 ### 다시 4개에서 2개로 감소된 것을 확인할 수 있다
 <img width="585" height="197" alt="image" src="https://github.com/user-attachments/assets/f80cb7ae-15d1-4b2f-864e-722c4d359990" />
+
+
+## 클러스터 크기를 줄일 때
+### 방법 A: Compute Fleet 중지
+
+
+```
+# 1. 컴퓨팅 노드 중지
+pcluster update-compute-fleet --cluster-name my-cluster --status STOP_REQUESTED
+
+# 2. 설정 변경 (크기 축소)
+pcluster update-cluster --cluster-name my-cluster --config-file new-config.yaml
+```
+
+### QueueUpdateStrategy를 TERMINATE로 설정
+```
+Scheduling:
+QueueUpdateStrategy: TERMINATE  # 설정 파일에 추가
+
+# 바로 업데이트 가능
+pcluster update-cluster --cluster-name my-cluster --config-file new-config.yaml
+
+```
