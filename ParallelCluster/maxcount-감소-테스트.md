@@ -21,7 +21,7 @@
 <img width="585" height="197" alt="image" src="https://github.com/user-attachments/assets/f80cb7ae-15d1-4b2f-864e-722c4d359990" />
 
 
-## 클러스터 크기를 줄일 때
+## 클러스터 크기를 줄일 때: 아래 두가지 방법 중 하나
 ### 방법 A: Compute Fleet 중지
 
 
