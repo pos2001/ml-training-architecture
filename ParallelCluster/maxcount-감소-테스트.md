@@ -42,3 +42,38 @@ QueueUpdateStrategy: TERMINATE  # 설정 파일에 추가
 pcluster update-cluster --cluster-name my-cluster --config-file new-config.yaml
 
 ```
+
+
+### TERMINATE 동작 방식
+### 노드 목록 뒤에서부터 종료 (앞쪽 노드는 유지)
+```
+초기 상태:
+- MinCount = 5, MaxCount = 10
+- 노드: st-[1-5], dy-[1-5]
+
+축소 후:
+- MinCount = 3, MaxCount = 5
+- 유지되는 노드: st-[1-3], dy-[1-2]  ✅ 그대로 유지
+- 종료되는 노드: st-[4-5], dy-[3-5]  ❌ 삭제됨
+
+```
+
+###  Compute Fleet 중지 없이 가능한 변경
+```
+이런 변경은 즉시 적용 가능 (노드 중지 불필요):
+
+✅ 새 큐(SlurmQueue) 추가 ✅ 새 컴퓨팅 리소스(ComputeResource) 추가 ✅ MaxCount 증가 ✅ MinCount와 MaxCount 동시에 같은 양 이상 증가
+
+# 이런 변경은 바로 가능
+Scheduling:
+SlurmQueues:
+- Name: queue1
+ComputeResources:
+- MinCount: 5 → 8     # +3
+MaxCount: 10 → 15   # +5 (MinCount 증가분 이상)
+
+```
+
+
+
+
