@@ -251,7 +251,132 @@ config=ds_config  # DeepSpeed의 ZeRO 최적화
 ```
 
 
-### 
+### Pyxis + Enroot 중심 아키텍처
 ```
+┌─────────────────────────────────────────────────────────────┐
+│                    Application Layer                         │
+│              (Your Training Script / Model Code)             │
+│                      train.py / main.py                      │
+└─────────────────────────────────────────────────────────────┘
+↓
+┌─────────────────────────────────────────────────────────────┐
+│              Distributed Training Libraries                  │
+├─────────────────────────────────────────────────────────────┤
+│  ┌──────────┐  ┌──────────┐  ┌─────────────────────────┐   │
+│  │   DDP    │  │ Megatron │  │      DeepSpeed          │   │
+│  │ (PyTorch)│  │  (NVIDIA)│  │     (Microsoft)         │   │
+│  └──────────┘  └──────────┘  └─────────────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
+↓
+┌─────────────────────────────────────────────────────────────┐
+│              Deep Learning Frameworks                        │
+│         PyTorch / TensorFlow / JAX                           │
+└─────────────────────────────────────────────────────────────┘
+↓
+┌─────────────────────────────────────────────────────────────┐
+│            Communication Backends                            │
+│  NCCL (GPU-GPU)  │  UCX  │  MPI  │  libfabric (EFA)        │
+└─────────────────────────────────────────────────────────────┘
+↓
+┌═════════════════════════════════════════════════════════════┐
+║           Container Runtime Layer (Enroot)                   ║
+╠═════════════════════════════════════════════════════════════╣
+║  ┌───────────────────────────────────────────────────────┐  ║
+║  │          Container Environment                        │  ║
+║  │  ┌─────────────────────────────────────────────────┐  │  ║
+║  │  │  /usr/local/bin/python                          │  │  ║
+║  │  │  /usr/local/lib/python3.10/site-packages/       │  │  ║
+║  │  │    ├─ torch/                                     │  │  ║
+║  │  │    ├─ deepspeed/                                 │  │  ║
+║  │  │    ├─ transformers/                              │  │  ║
+║  │  │    └─ ...                                        │  │  ║
+║  │  │                                                   │  │  ║
+║  │  │  /usr/local/cuda-12.1/                           │  │  ║
+║  │  │    ├─ lib64/ (CUDA libraries)                    │  │  ║
+║  │  │    ├─ bin/ (nvcc, nvidia-smi)                    │  │  ║
+║  │  │    └─ include/                                   │  │  ║
+║  │  └─────────────────────────────────────────────────┘  │  ║
+║  │                                                         │  ║
+║  │  Mounted Volumes:                                      │  ║
+║  │  ┌─────────────────────────────────────────────────┐  │  ║
+║  │  │  /data      → /lustre/datasets                  │  │  ║
+║  │  │  /workspace → /home/user/projects               │  │  ║
+║  │  │  /results   → /lustre/checkpoints               │  │  ║
+║  │  └─────────────────────────────────────────────────┘  │  ║
+║  └───────────────────────────────────────────────────────┘  ║
+║                                                              ║
+║  Container Image Format: Squashfs                            ║
+║  Location: /shared/enroot/pytorch-23.10.sqsh                ║
+╚═════════════════════════════════════════════════════════════╝
+↓
+┌═════════════════════════════════════════════════════════════┐
+║              Pyxis (Slurm Container Plugin)                  ║
+╠═════════════════════════════════════════════════════════════╣
+║  Job Submission Interface:                                   ║
+║  ┌───────────────────────────────────────────────────────┐  ║
+║  │  srun --container-image=<image>                       │  ║
+║  │       --container-mounts=<mounts>                     │  ║
+║  │       --container-writable                            │  ║
+║  │       --container-remap-root                          │  ║
+║  └───────────────────────────────────────────────────────┘  ║
+║                                                              ║
+║  Responsibilities:                                           ║
+║  • Parse container options from Slurm                        ║
+║  • Pull/import container images                              ║
+║  • Convert to Enroot format (if needed)                      ║
+║  • Setup GPU device access                                   ║
+║  • Configure network namespaces                              ║
+║  • Mount volumes and bind paths                              ║
+║  • Launch Enroot containers per task                         ║
+╚═════════════════════════════════════════════════════════════╝
+↓
+┌═════════════════════════════════════════════════════════════┐
+║                    Slurm Workload Manager                    ║
+╠═════════════════════════════════════════════════════════════╣
+║  ┌────────────────┬────────────────┬─────────────────────┐  ║
+║  │  slurmctld     │   slurmd       │    Job Scheduler    │  ║
+║  │  (Controller)  │   (Daemon)     │    (Resources)      │  ║
+║  └────────────────┴────────────────┴─────────────────────┘  ║
+║                                                              ║
+║  Job Distribution:                                           ║
+║  Node 1: Tasks 0-7  (8 GPUs)                                ║
+║  Node 2: Tasks 8-15 (8 GPUs)                                ║
+║  Node 3: Tasks 16-23 (8 GPUs)                               ║
+║  Node 4: Tasks 24-31 (8 GPUs)                               ║
+╚═════════════════════════════════════════════════════════════╝
+↓
+┌─────────────────────────────────────────────────────────────┐
+│                   Host System (Minimal)                      │
+├─────────────────────────────────────────────────────────────┤
+│  Required Components ONLY:                                   │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │  • NVIDIA Driver (535.xx or later)                    │  │
+│  │  • Slurm (slurmctld, slurmd)                          │  │
+│  │  • Pyxis plugin (spank_pyxis.so)                      │  │
+│  │  • Enroot runtime (/usr/bin/enroot)                   │  │
+│  │  • Network drivers (Mellanox OFED / EFA)              │  │
+│  │  • Lustre client (for shared storage)                 │  │
+│  └───────────────────────────────────────────────────────┘  │
+│                                                              │
+│  NOT Required:                                               │
+│  ✗ Python / pip                                              │
+│  ✗ CUDA Toolkit                                              │
+│  ✗ cuDNN / NCCL libraries                                    │
+│  ✗ PyTorch / TensorFlow                                      │
+│  ✗ Any ML frameworks                                         │
+└─────────────────────────────────────────────────────────────┘
+↓
+┌─────────────────────────────────────────────────────────────┐
+│                 Hardware & Network Layer                     │
+├─────────────────────────────────────────────────────────────┤
+│  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐   │
+│  │   GPUs       │  │   Network    │  │   Storage       │   │
+│  │              │  │              │  │                 │   │
+│  │ • NVIDIA     │  │ • InfiniBand │  │ • Lustre FS     │   │
+│  │   A100/H100  │  │   (200 Gbps) │  │   (parallel)    │   │
+│  │ • NVLink     │  │ • AWS EFA    │  │ • NVMe (local)  │   │
+│  │ • 8 per node │  │ • RDMA       │  │ • /shared/      │   │
+│  └──────────────┘  └──────────────┘  └─────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
 
 ```
