@@ -1,52 +1,61 @@
 
 ## 프레임워크와 병렬화 라이브러리의 관계
 ### 딥러닝 프레임워크와 분산 학습 라이브러리들의 계층 구조를 시각화
+### Application = 운전자가 작성한 경로 (여러분의 코드)
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Application Layer                        │
-│        (Your Training Script / Model Code): 예를 들면 ddp.py  │
+│                    Application Layer                         │
+│              (train.py - Your Training Script)               │
 └─────────────────────────────────────────────────────────────┘
-↓
+                            ↓
 ┌─────────────────────────────────────────────────────────────┐
 │              Distributed Training Libraries                  │
-├─────────────────────────────────────────────────────────────┤
-│  ┌──────────┐  ┌──────────┐  ┌─────────────────────────┐   │
-│  │   DDP    │  │ Megatron │  │      DeepSpeed          │   │
-│  │ (PyTorch)│  │  (NVIDIA)│  │     (Microsoft)         │   │
-│  └──────────┘  └──────────┘  └─────────────────────────┘   │
-│       ↓             ↓                    ↓                   │
-│  Data Parallel  Tensor/Pipeline   All Strategies + ZeRO     │
-└─────────────────────────────────────────────────────────────┘
-↓
+├──────────────┬──────────────┬──────────────┬────────────────┤
+│     DDP      │   Megatron   │  DeepSpeed   │   Horovod      │
+│  (PyTorch)   │   (NVIDIA)   │ (Microsoft)  │    (Uber)      │
+│              │              │              │                │
+│  PyTorch     │  PyTorch     │  PyTorch     │ Multi-Framework│
+│  Only        │  Only        │  Primary     │ (PyTorch, TF,  │
+│              │              │              │  JAX, Keras)   │
+└──────┬───────┴──────┬───────┴──────┬───────┴────┬───┬───┬───┘
+       │              │              │            │   │   │
+       ↓              ↓              ↓            ↓   ↓   ↓
 ┌─────────────────────────────────────────────────────────────┐
 │              Deep Learning Frameworks                        │
-├──────────────────────────┬──────────────────────────────────┤
-│       PyTorch            │        TensorFlow                │
-│  ┌──────────────────┐    │   ┌──────────────────┐          │
-│  │ Autograd Engine  │    │   │  Eager Execution │          │
-│  │ Neural Networks  │    │   │  Keras API       │          │
-│  │ Optimizers       │    │   │  tf.distribute   │          │
-│  └──────────────────┘    │   └──────────────────┘          │
-└──────────────────────────┴──────────────────────────────────┘
-↓
+├──────────────┬──────────────┬──────────────┬────────────────┤
+│   PyTorch    │ TensorFlow   │     JAX      │   Keras/MXNet  │
+│              │              │              │                │
+│  • DDP       │  • Horovod   │  • Horovod   │  • Horovod     │
+│  • Megatron  │              │              │                │
+│  • DeepSpeed │              │              │                │
+│  • Horovod   │              │              │                │
+└──────────────┴──────────────┴──────────────┴────────────────┘
+                            ↓
 ┌─────────────────────────────────────────────────────────────┐
 │            Communication Backends                            │
-├─────────────────────────────────────────────────────────────┤
-│  NCCL (NVIDIA)  │  Gloo  │  MPI  │  Horovod  │  Custom     │
-└─────────────────────────────────────────────────────────────┘
-↓
+├──────────────┬──────────────┬──────────────┬────────────────┤
+│     NCCL     │     Gloo     │     MPI      │   Framework    │
+│   (NVIDIA)   │  (PyTorch)   │  (Standard)  │   Built-in     │
+│              │              │              │                │
+│  • GPU comm  │  • CPU comm  │  • Horovod's │  • TF's gRPC   │
+│  • DDP uses  │  • DDP uses  │    primary   │  • Custom      │
+│  • Horovod   │              │    backend   │    backends    │
+│    can use   │              │  • NCCL for  │                │
+│              │              │    GPU ops   │                │
+└──────────────┴──────────────┴──────────────┴────────────────┘
+                            ↓
 ┌─────────────────────────────────────────────────────────────┐
 │                 Hardware Layer                               │
-├─────────────────────────────────────────────────────────────┤
-│  GPUs (CUDA)  │  TPUs  │  CPUs  │  Network (IB/EFA)        │
+│  GPUs (CUDA)  │  TPUs  │  CPUs  │  Network (IB/EFA/RoCE)   │
 └─────────────────────────────────────────────────────────────┘
+
 
 ```
 
 
 ## 각 계층의 역할:
 
-### Deep Learning Frameworks (기반)
+### Deep Learning Frameworks (기반): 역할: 딥러닝의 기본 빌딩 블록 제공
 ```
 PyTorch                          TensorFlow
 │                                 │
@@ -55,13 +64,29 @@ PyTorch                          TensorFlow
 ├─ 신경망 모듈                    ├─ Keras API
 └─ 기본 분산 학습 지원             └─ tf.distribute API
 
+제공하는 것:
+
+    텐서 연산 (CPU/GPU)
+    자동 미분 (Autograd)
+    신경망 레이어 (nn.Module)
+    옵티마이저 (SGD, Adam 등)
+    단일 GPU 학습
+
+
+Deep Learning Framework:
+
+    "어떻게 신경망을 만들고 학습할까?"
+    텐서, 레이어, 옵티마이저 제공
+    단일 디바이스에서 완전히 동작
+
+Framework = 자동차 엔진 (기본 동력)
 ```
 
 
 
 
 
-### Distributed Training Libraries (상위)
+### Distributed Training Libraries (상위):Framework 위에서 분산 학습 전략 구현
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                    호환성 매트릭스                        │
@@ -77,6 +102,14 @@ PyTorch                          TensorFlow
 │   Horovod    │      ✓       │      ✓       │     ✓      │
 └──────────────┴──────────────┴──────────────┴────────────┘
 
+Distributed Training Library:
+
+    "어떻게 여러 GPU/노드에서 효율적으로 학습할까?"
+    Framework 위에서 동작
+    분산 전략과 통신 패턴 구현
+    Framework의 기능을 확장
+
+Distributed Library = 터보차저 (성능 향상 장치)
 ```
 
 
