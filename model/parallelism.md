@@ -108,7 +108,28 @@ DeepSpeed만 지원 ✓
 
 
 
-### 
+### 전략 선택 가이드
 ```
+작은 모델 (< 1B parameters)
+✓ Data Parallelism (DDP, Horovod)
+- 간단하고 효율적
+- 통신 오버헤드 낮음
+
+중간 모델 (1B - 10B parameters)
+✓ Data Parallelism + ZeRO Stage 2 (DeepSpeed)
+- 메모리 효율적
+- 구현 복잡도 낮음
+
+큰 모델 (10B - 100B parameters)
+✓ 3D Parallelism (Megatron, DeepSpeed)
+- DP + TP + PP 조합
+- 최대 확장성
+
+초대형 모델 (> 100B parameters)
+✓ 3D Parallelism + ZeRO Stage 3 (DeepSpeed)
+- 모든 최적화 기법 활용
+- CPU/NVMe 오프로드
 
 ```
+<img width="883" height="395" alt="image" src="https://github.com/user-attachments/assets/d8d0d351-b466-48a4-88e3-4323f0af5e44" />
+
