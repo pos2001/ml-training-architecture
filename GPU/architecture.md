@@ -57,7 +57,7 @@
 
 ```
 
-
+<img width="873" height="180" alt="image" src="https://github.com/user-attachments/assets/35172c6e-6e1c-4ccb-aac5-4976e5feb074" />
 
 ### 개별 GPU 상세 아키텍처 (NVIDIA H200)
 ### 네, 각 GPU는 완전히 독립적인 HBM3e 메모리를 가지고 있습니다!
@@ -260,7 +260,7 @@ NVLink 4.0 (Physical Hardware)
 
 ```
 
-<img width="873" height="180" alt="image" src="https://github.com/user-attachments/assets/35172c6e-6e1c-4ccb-aac5-4976e5feb074" />
+
 
 
 
