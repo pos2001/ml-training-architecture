@@ -13,11 +13,32 @@
 ├──────────────┬──────────────┬──────────────┬────────────────┤
 │     DDP      │   Megatron   │  DeepSpeed   │   Horovod      │
 │  (PyTorch)   │   (NVIDIA)   │ (Microsoft)  │    (Uber)      │
+├──────────────┼──────────────┼──────────────┼────────────────┤
+│  Framework   │  Framework   │  Framework   │  Framework     │
+│  PyTorch     │  PyTorch     │  PyTorch     │  Multi-        │
+│  Only        │  Only        │  Primary     │  Framework     │
+│              │              │              │  (PyTorch, TF, │
+│              │              │              │   JAX, Keras)  │
+├──────────────┼──────────────┼──────────────┼────────────────┤
+│  Strategies  │  Strategies  │  Strategies  │  Strategies    │
 │              │              │              │                │
-│  PyTorch     │  PyTorch     │  PyTorch     │ Multi-Framework│
-│  Only        │  Only        │  Primary     │ (PyTorch, TF,  │
-│              │              │              │  JAX, Keras)   │
-└──────┬───────┴──────┬───────┴──────┬───────┴────┬───┬───┬───┘
+│  ✓ Data      │  ✓ Data      │  ✓ Data      │  ✓ Data        │
+│    Parallel  │    Parallel  │    Parallel  │    Parallel    │
+│              │              │              │                │
+│  ✗ Tensor    │  ✓ Tensor    │  ✓ Tensor    │  ✗ Tensor      │
+│    Parallel  │    Parallel  │    Parallel  │    Parallel    │
+│              │              │              │                │
+│  ✗ Pipeline  │  ✓ Pipeline  │  ✓ Pipeline  │  ✗ Pipeline    │
+│    Parallel  │    Parallel  │    Parallel  │    Parallel    │
+│              │              │              │                │
+│  ✗ ZeRO      │  ✗ ZeRO      │  ✓ ZeRO      │  ✗ ZeRO        │
+│              │              │  (Stage 1-3) │                │
+│              │              │              │                │
+│  ✗ 3D        │  ✓ 3D        │  ✓ 3D        │  ✗ 3D          │
+│    Parallel  │    Parallel  │    Parallel  │    Parallel    │
+│              │  (DP+TP+PP)  │  (DP+TP+PP)  │                │
+└──────────────┴──────────────┴──────────────┴────────────────┘
+
        │              │              │            │   │   │
        ↓              ↓              ↓            ↓   ↓   ↓
 ┌─────────────────────────────────────────────────────────────┐
