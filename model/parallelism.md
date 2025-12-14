@@ -25,6 +25,40 @@ GPU 3: Model Copy → Batch 4 → Gradients
 
 
 
+```
+각 GPU가 자신의 HBM에 모델 전체를 복사:
+
+GPU 0 HBM (24GB)          GPU 1 HBM (24GB)
+┌──────────────┐          ┌──────────────┐
+│ Model Copy   │          │ Model Copy   │
+│ (7GB)        │          │ (7GB)        │
+│              │          │              │
+│ Batch 0      │          │ Batch 1      │
+│ (2GB)        │          │ (2GB)        │
+│              │          │              │
+│ Gradients    │          │ Gradients    │
+│ (7GB)        │          │ (7GB)        │
+└──────────────┘          └──────────────┘
+
+GPU 2 HBM (24GB)          GPU 3 HBM (24GB)
+┌──────────────┐          ┌──────────────┐
+│ Model Copy   │          │ Model Copy   │
+│ (7GB)        │          │ (7GB)        │
+│              │          │              │
+│ Batch 2      │          │ Batch 3      │
+│ (2GB)        │          │ (2GB)        │
+│              │          │              │
+│ Gradients    │          │ Gradients    │
+│ (7GB)        │          │ (7GB)        │
+└──────────────┘          └──────────────┘
+
+```
+
+
+
+
+
+
 
 
 ### Tensor Parallelism (텐서 병렬화)
