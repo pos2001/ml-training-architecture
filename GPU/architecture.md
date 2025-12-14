@@ -230,13 +230,27 @@ GPU 간 데이터 교환은 NVLink를 통해서만 가능
 ⚠️ 중요: GPU는 다른 GPU의 HBM에 직접 접근 불가!
          반드시 NVLink를 통한 명시적 데이터 전송 필요!
 
+NCCL을 통한 GPU 간 통신
 ```
 
 
 
 
-### 
+### 맞습니다! NCCL이 NVLink를 추상화합니다
 ```
+┌─────────────────────────────────────────────────────────────────┐
+│                    올바른 이해                                   │
+└─────────────────────────────────────────────────────────────────┘
+
+Application (train.py)
+    ↓
+DDP / Distributed Library
+    ↓
+NCCL (NVIDIA Collective Communications Library)
+    ↓
+NVLink 4.0 (Physical Hardware)
+    ↓
+다른 GPU의 HBM3e
 
 ```
 
