@@ -39,7 +39,7 @@ Busbw = Algbw × 2(N-1)/N
 ```
 <img width="782" height="180" alt="image" src="https://github.com/user-attachments/assets/4888e10c-b7a5-42f6-8638-3961063f39c2" />
 
-<img width="450" height="468" alt="image" src="https://github.com/user-attachments/assets/d9a1bb2a-010b-48da-acff-9235912b6a01" />
+
 
 
 ### Busbw = 참고용 숫자
@@ -197,7 +197,7 @@ All-Reduce도 마찬가지:
 
 
 
-
+<img width="450" height="468" alt="image" src="https://github.com/user-attachments/assets/d9a1bb2a-010b-48da-acff-9235912b6a01" />
 
 
 
