@@ -28,7 +28,16 @@ Busbw = Algbw × 2(N-1)/N
 
 이게 실제 성능입니다! ✅
 
+
+
+400 GB/s를 달성하려면:
+
+400 GB/s = 16 GB ÷ 시간
+시간 = 16 GB ÷ 400 GB/s
+시간 = 0.04초 = 40ms
+
 ```
+<img width="782" height="180" alt="image" src="https://github.com/user-attachments/assets/4888e10c-b7a5-42f6-8638-3961063f39c2" />
 
 
 
