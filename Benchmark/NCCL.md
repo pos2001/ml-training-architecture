@@ -1,4 +1,60 @@
 
+### Buffer Size = 통신할 데이터의 크기
+NCCL 테스트에서 GPU 간 주고받는 메시지의 크기를 의미합니다.
+```
+nccl-tests에서의 Buffer Size
+./all_reduce_perf -b 8 -e 8G -f 2 -g 8
+                    ↑    ↑    ↑
+                    |    |    |
+          시작 크기  |    |    증가 배율
+                  끝 크기  |
+
+
+파라미터 설명:
+
+    -b 8: 시작 크기 = 8 bytes
+    -e 8G: 끝 크기 = 8 Gigabytes
+    -f 2: 배율 = 2배씩 증가
+    -g 8: GPU 수 = 8개
+
+```
+
+### NCCL_DEBUG=INFO가 제공하는 정보
+```
+
+    네트워크 인터페이스: 어떤 네트워크 디바이스를 사용하는지
+    CUDA 드라이버 버전: GPU 드라이버 정보
+
+    NCCL 라이브러리 버전
+    컴파일된 CUDA 버전
+
+
+    네트워크 백엔드: EFA, InfiniBand, TCP 등
+    플러그인 버전: aws-ofi-nccl 버전
+    통신 라이브러리: Libfabric 사용 여부
+
+
+    적용된 모든 NCCL 환경 변수
+    프로토콜 설정: Simple, LL (Low Latency), LL128
+    알고리즘: Ring, Tree, CollNet
+
+
+    통신 채널 구성: 몇 개의 채널 사용
+    GPU 연결 구조: Ring, Tree 토폴로지
+    GPU 간 경로: 어떤 순서로 통신하는지
+
+
+    통신 방식:
+        SHM (Shared Memory): 같은 노드 내 GPU 간
+        P2P (Peer-to-Peer): PCIe 또는 NVLink
+        NET (Network): 다른 노드 간 (EFA, IB 등)
+
+
+    Communicator 초기화 상태
+    Launch mode: Parallel (동시 실행) vs Group (순차 실행)
+
+```
+
 
 
 ## 100노드 P5e.48xlarge 클러스터가 정상 동작하는지 확인하고, 빠르게 실제 모델 학습을 시작하는 것
@@ -214,14 +270,6 @@ Q: 학습 중 성능 문제가 발견되면? A: 그때 프로파일링하고 최
 ```
 
 
-
-
-
-
-### 
-```
-
-```
 
 
 
