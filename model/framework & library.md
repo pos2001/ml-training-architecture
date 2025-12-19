@@ -122,6 +122,41 @@
 
 ```
 
+### AWS EFA특화
+```
+┌─────────────────────────────────────────────────┐
+│         APPLICATION CODE (train.py)             │
+│    Launcher: torchrun, DeepSpeed, Accelerate    │
+└─────────────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────────────┐
+│      DISTRIBUTED TRAINING LIBRARIES              │
+│  PyTorch DDP | Megatron | DeepSpeed | Horovod   │
+│             Accelerate                           │
+└─────────────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────────────┐
+│       DEEP LEARNING FRAMEWORKS                   │
+│  PyTorch | TensorFlow | JAX | MXNet | Keras     │
+└─────────────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────────────┐
+│    COMMUNICATION BACKENDS & LIBRARIES            │
+│  NCCL | AWS OFi NCCL | Gloo | MPI               │
+│  cuDNN | CUBLAS | libfabric                     │
+└─────────────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────────────┐
+│         NETWORK HARDWARE                         │
+│  EFA (+ Kernel Driver) | InfiniBand | Ethernet  │
+└─────────────────────────────────────────────────┘
+
+```
+
+
+
+
+
 
 ## 각 계층의 역할:
 
