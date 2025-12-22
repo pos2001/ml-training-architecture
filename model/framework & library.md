@@ -49,6 +49,25 @@
 ```
 
 
+```
+자동차 제조 비유:
+
+DEEP LEARNING FRAMEWORKS (Qwen3MoeForCausalLM):
+= 자동차 설계도 + 엔진 설계
+- "이 차는 어떻게 생겼고, 엔진은 어떻게 작동하는가?"
+- 단일 자동차의 작동 방식
+
+DISTRIBUTED TRAINING LIBRARIES (DDP, DeepSpeed):
+= 공장 생산 라인 시스템
+- "여러 대의 차를 동시에 어떻게 만드는가?"
+- "부품을 어떻게 분배하고 조립하는가?"
+- 여러 자동차를 효율적으로 생산하는 시스템
+
+```
+
+
+
+
 
 
 ```
