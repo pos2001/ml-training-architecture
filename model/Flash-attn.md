@@ -1,5 +1,5 @@
 
-### Flash-attn은 DEEP LEARNING FRAMEWORKS 계층의 최적화 구현체
+### Flash-attn은 PyTorch 내에서 사용되는 커널 수준 최적화 라이브러리
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    APPLICATION CODE                                  │
