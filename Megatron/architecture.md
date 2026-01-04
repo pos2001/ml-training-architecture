@@ -1,4 +1,13 @@
 
+###Megatron-LM은 NVIDIA에서 개발한 대규모 언어 모델 학습을 위한 프레임워크입니다:
+
+주요 특징	설명
+
+<img width="339" height="115" alt="image" src="https://github.com/user-attachments/assets/a6d45d6f-c5ac-48fe-8958-965013648f00" />
+
+
+
+
 ## Megatron 분산 학습: 완전한 아키텍처 (연결 포함)
 ### 전체 시스템 구조
 ```
