@@ -9,7 +9,7 @@ Busbw = Algbw × 2(N-1)/N
 
 ### 
 ```
-
+algbw = 메시지 크기(bytes) / 실행 시간(s)
 ```
 
 
