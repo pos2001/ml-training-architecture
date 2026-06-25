@@ -19,7 +19,7 @@ Busbw = Algbw × 2(N-1)/N
 
 ```
 
-### Algbw = 실제 속도 (중요!)
+### Busbw = 실제 속도 (중요!)
 ```
 16GB 데이터를 All-Reduce 하는데 얼마나 걸렸나?
 
