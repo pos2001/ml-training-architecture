@@ -27,18 +27,6 @@ Busbw는 통신 패턴을 정규화해서 노드 수가 늘어도 대체로 일�
 
 16GB 데이터를 All-Reduce 하는데 얼마나 걸렸나?
 
-예: 16GB를 0.1초에 완료
-→ Algbw = 16GB / 0.1초 = 160 GB/s
-
-이게 실제 성능입니다! ✅
-
-
-
-400 GB/s를 달성하려면:
-
-400 GB/s = 16 GB ÷ 시간
-시간 = 16 GB ÷ 400 GB/s
-시간 = 0.04초 = 40ms
 
 ```
 <img width="782" height="180" alt="image" src="https://github.com/user-attachments/assets/4888e10c-b7a5-42f6-8638-3961063f39c2" />
@@ -46,15 +34,9 @@ Busbw는 통신 패턴을 정규화해서 노드 수가 늘어도 대체로 일�
 
 
 
-### Busbw = 참고용 숫자
+### Busbw =
 ```
-Busbw = Algbw × 약 2배
 
-예: Algbw 160 GB/s
-→ Busbw = 약 320 GB/s
-
-왜 2배? Ring All-Reduce가 데이터를 여러 번 전송하기 때문
-(신경 안 써도 됨, 참고용)
 
 ```
 
